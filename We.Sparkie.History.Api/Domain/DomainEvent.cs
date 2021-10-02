@@ -6,9 +6,9 @@ namespace We.Sparkie.History.Api.Domain
     {
         public DateTime Occurred { get; set; }
 
-        protected DomainEvent(DateTime occurred)
+        protected DomainEvent()
         {
-            Occurred = occurred;
+            Occurred = DateTime.Now;
         }
 
         public abstract void Process();

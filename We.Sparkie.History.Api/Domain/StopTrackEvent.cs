@@ -5,12 +5,11 @@ namespace We.Sparkie.History.Api.Domain
     public class StopTrackEvent : TrackEvent
     {
         public TimeSpan Position { get; }
-        public bool Finished { get; }
 
-        public StopTrackEvent(Track track, DateTime occurred, TimeSpan position, bool finished) : base(track, occurred)
+        public StopTrackEvent(Track track, DateTime occurred, TimeSpan position) : base(track)
         {
             Position = position;
-            Finished = finished;
+            Finished = false;
         }
 
         public override void Process()

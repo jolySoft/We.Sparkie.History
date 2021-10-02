@@ -23,6 +23,8 @@ namespace We.Sparkie.History.Api
 
         public IConfiguration Configuration { get; }
 
+        public static Action<IServiceCollection> OnConfigureService { get; set; }
+
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
@@ -32,6 +34,8 @@ namespace We.Sparkie.History.Api
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "We.Sparkie.History.Api", Version = "v1" });
             });
+
+            OnConfigureService?.Invoke(services);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

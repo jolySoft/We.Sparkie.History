@@ -14,6 +14,8 @@ namespace We.Sparkie.History.Api.Domain
 
         public TimeSpan Position { get; private set; }
 
+        public TimeSpan Length { get; set; }
+
         public bool Finished { get; set; }
 
         public bool IsPlaying { get; private set; }
@@ -29,6 +31,13 @@ namespace We.Sparkie.History.Api.Domain
             IsPlaying = false;
             Finished = evt.Finished;
             Position = evt.Position;
+        }
+
+        public void HandleEndTrack()
+        {
+            IsPlaying = false;
+            Finished = true;
+            Position = Length;
         }
     }
 }
