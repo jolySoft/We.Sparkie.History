@@ -1,7 +1,9 @@
 ﻿using System;
+using MongoDB.Bson.Serialization.Attributes;
 
 namespace We.Sparkie.History.Api.Domain
 {
+    [BsonDiscriminator(nameof(StopTrackEvent))]
     public class StopTrackEvent : TrackEvent
     {
         public TimeSpan Position { get; }

@@ -1,9 +1,11 @@
 ﻿using System.Net.Http;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Mongo2Go;
 using MongoDB.Driver;
+using Newtonsoft.Json;
 using We.Sparkie.History.Api;
 
 namespace We.Sparkie.History.Tests
@@ -28,6 +30,14 @@ namespace We.Sparkie.History.Tests
 
             TestServer = new TestServer(new WebHostBuilder().UseStartup<Startup>());
             Client = TestServer.CreateClient();
+        }
+
+        protected async Task<HttpResponseMessage> PostToAnEndpoint(object request, string path)
+        {
+            var contentString = JsonConvert.SerializeObject(request);
+            var stringContent = new StringContent(contentString);
+
+            return await Client.PatchAsync(path, stringContent);
         }
     }
 }

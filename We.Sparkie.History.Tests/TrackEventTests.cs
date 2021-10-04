@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using FluentAssertions;
 using We.Sparkie.History.Api.Domain;
 using Xunit;
@@ -13,10 +14,12 @@ namespace We.Sparkie.History.Tests
         private StartTrackEvent _startTrack;
         private StopTrackEvent _stopTrack;
         private EndTrackEvent _endTrackEvent;
+        private EventRepositoryStub _eventRepository;
 
         public TrackEventTests()
         {
-            _processor = new EventProcessor();            
+            _eventRepository = new EventRepositoryStub();
+            _processor = new EventProcessor(_eventRepository);
             
             _track = new Track
             {
@@ -28,54 +31,41 @@ namespace We.Sparkie.History.Tests
         }
 
         [Fact]
-        public void HandleTrackStartEvent()
+        public async Task HandleTrackStartEvent()
         {
             _startTrack = new StartTrackEvent(_track, DateTime.Now);
 
-            _processor.Process(_startTrack);
+            await _processor.Process(_startTrack);
             
-            var firstLogEvent = (StartTrackEvent) _processor.Log.First();
+            var firstLogEvent = (StartTrackEvent) _eventRepository.Log.First();
             firstLogEvent.Should().BeEquivalentTo(_startTrack);
             _track.Finished.Should().BeFalse();
         }
 
         [Fact]
-        public void HandleTrackStopEvent()
+        public async Task HandleTrackStopEvent()
         {
             var position = new TimeSpan(0, 3, 37);
             _stopTrack = new StopTrackEvent(_track, DateTime.Now, position);
 
-            _processor.Process(_stopTrack);
+            await _processor.Process(_stopTrack);
 
-            var firstLogEvent = (StopTrackEvent) _processor.Log.First();
+            var firstLogEvent = (StopTrackEvent) _eventRepository.Log.First();
             firstLogEvent.Should().BeEquivalentTo(_stopTrack);
             _track.Position.Should().Be(position);
         }
 
         [Fact]
-        public void HandleTackCompleteEvent()
+        public async Task HandleTackCompleteEvent()
         {
             _endTrackEvent = new EndTrackEvent(_track);
 
-            _processor.Process(_endTrackEvent);
+            await _processor.Process(_endTrackEvent);
 
-            var firstLogEvent = (EndTrackEvent) _processor.Log.First();
+            var firstLogEvent = (EndTrackEvent) _eventRepository.Log.First();
             firstLogEvent.Should().BeEquivalentTo(_endTrackEvent);
             _track.Finished = true;
             _track.Position.Should().Be(_track.Length);
-        }
-    }
-
-    public class EndTrackEvent : TrackEvent
-    {
-        public EndTrackEvent(Track track) : base(track)
-        {
-            Finished = true;
-        }
-
-        public override void Process()
-        {
-            Track.HandleEndTrack();
         }
     }
 }

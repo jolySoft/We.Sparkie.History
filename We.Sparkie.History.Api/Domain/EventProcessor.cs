@@ -1,20 +1,22 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using We.Sparkie.History.Api.Repository;
 
 namespace We.Sparkie.History.Api.Domain
 {
     public class EventProcessor
     {
-        public List<DomainEvent> Log { get; set; }
+        private readonly IDomainEventRepository<DomainEvent> _eventRepository;
 
-        public EventProcessor()
+        public EventProcessor(IDomainEventRepository<DomainEvent> eventRepository)
         {
-            Log = new List<DomainEvent>();
+            _eventRepository = eventRepository;
         }
 
-        public void Process(DomainEvent evt)
+        public async Task Process(DomainEvent evt)
         {
             evt.Process();
-            Log.Add(evt);
+            await _eventRepository.Insert(evt);
         }
     }
 }

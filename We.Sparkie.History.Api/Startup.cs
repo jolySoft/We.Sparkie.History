@@ -11,6 +11,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using We.Sparkie.DigitalAsset.Api.Repository;
+using We.Sparkie.History.Api.Domain;
+using We.Sparkie.History.Api.Dto;
+using We.Sparkie.History.Api.Repository;
 
 namespace We.Sparkie.History.Api
 {
@@ -28,7 +32,9 @@ namespace We.Sparkie.History.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
+            services.AddAutoMapper(typeof(DtoMapperProfile));
+            services.AddTransient<EventProcessor>();
+            services.AddScoped(typeof(IDomainEventRepository<>), typeof(DomainEventDomainEventRepository<>));
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
@@ -51,8 +57,6 @@ namespace We.Sparkie.History.Api
             app.UseHttpsRedirection();
 
             app.UseRouting();
-
-            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
